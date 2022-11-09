@@ -2,6 +2,8 @@ import asyncHandler from 'express-async-handler'
 import Vendor from '../models/vendorModel.js'
 import generateToken from '../utils/generateToken.js'
 import jwt from 'jsonwebtoken'
+import Order from '../models/orderModel.js'
+import Product from '../models/productModel.js'
 const registerStore = asyncHandler(async (req, res) => {
   let { email, phoneNo } = req.body
   let emailExists = await Vendor.findOne({ email: email })
@@ -99,14 +101,104 @@ const goOnline = asyncHandler(async (req, res) => {
 })
 const storeWalletAmount = asyncHandler(async (req, res) => {
   try {
-    // let token = req.headers.authorization.split(' ')[1]
-    // let storeid = jwt.verify(token, process.env.JWT_SECRET)
-    // if (!storeid) {
-    //   return res.status(500).json({ msg: 'User not found' })
-    // }
+    let token = req.headers.authorization.split(' ')[1]
+    let storeid = jwt.verify(token, process.env.JWT_SECRET)
+    if (!storeid) {
+      return res.status(500).json({ msg: 'User not found' })
+    }
     res.status(200).json({ amount: '$500' })
   } catch (error) {
     res.status(500).json({ status: 500, msg: err.message })
+  }
+})
+
+//get vendor orders
+const getAllVendorOrders = asyncHandler(async (req, res) => {
+  try {
+    let token = req.headers.authorization.split(' ')[1]
+    let storeId = jwt.verify(token, process.env.JWT_SECRET)
+    if (!storeId) {
+      return res.status(500).json('Authnetication Failed')
+    }
+    // const store = await Store.find({ _id: storeId.id.toString() });
+    // if (store.isApproved == false) {
+    //   return res.status(500).json("Registeration approval pending by admin");
+    // }
+
+    const orders = await Order.find({
+      vendorId: storeId.id.toString(),
+    }).populate([
+      // {
+      //   path: "userId",
+      //   model: "User",
+      //   select: "_id name lastname phoneNo",
+      // },
+      {
+        path: 'products.id',
+        model: 'Product',
+        select: '_id name image',
+      },
+    ])
+    res.status(200).json({ orders })
+  } catch (error) {
+    console.log(error)
+    res.status(500).json({ msg: error })
+  }
+})
+
+const updateOrderStatus = asyncHandler(async (req, res) => {
+  try {
+    let token = req.headers.authorization.split(' ')[1]
+
+    let storeId = jwt.verify(token, process.env.JWT_SECRET)
+    if (!storeId) {
+      return res.status(500).json('Authnetication Failed')
+    }
+    const { status } = req.body
+    const order = await Order.findById(req.params.orderId)
+    let mess = ''
+    if (status === 'accepted') {
+      order.isAccepted = true
+      mess = 'Order Accepted'
+    } else if (status === 'rejected') {
+      order.isRejected = true
+      order.isAccepted = false
+      mess = 'Order Rejected'
+    } else if (status === 'delivered') {
+      order.isDelivered = true
+      mess = 'Order Delivered'
+    }
+    await order.save()
+    res.status(200).json({
+      msg: `${mess}`,
+    })
+  } catch (error) {
+    console.log(error)
+    res.status(500).json({ error })
+  }
+})
+const addStock = asyncHandler(async (req, res) => {
+  try {
+    let token = req.headers.authorization.split(' ')[1]
+    let storeId = jwt.verify(token, process.env.JWT_SECRET)
+    if (!storeId) {
+      return res.status(500).json('Authnetication Failed')
+    }
+    const { productId, stock } = req.body
+    const product = await Product.findOne({ _id: productId })
+    if (!product) {
+      return res.status(500).json('Product not found')
+    }
+    if (product.vendorId.toString() !== storeId.id.toString()) {
+      return res.status(500).json('Access denied')
+    } else {
+      product.qty += stock
+      await product.save()
+      res.status(200).json({ msg: 'Stock Updated', stock: product.qty })
+    }
+  } catch (error) {
+    console.log(error)
+    res.status(500).json({ error })
   }
 })
 export {
@@ -116,4 +208,7 @@ export {
   goOffline,
   goOnline,
   storeWalletAmount,
+  getAllVendorOrders,
+  updateOrderStatus,
+  addStock,
 }

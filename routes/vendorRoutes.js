@@ -1,12 +1,22 @@
 import express, { Router } from 'express'
 import { sendStoreOtp, verifyStoreOtp } from '../controllers/otp.js'
 import {
+  addProduct,
+  deleteProduct,
+  getProducts,
+  updateProduct,
+} from '../controllers/productController.js'
+import placeOrder from '../controllers/userController.js'
+import {
+  addStock,
   changePassword,
+  getAllVendorOrders,
   goOffline,
   goOnline,
   loginStore,
   registerStore,
   storeWalletAmount,
+  updateOrderStatus,
 } from '../controllers/vendorController.js'
 
 //import {registerStore, login} from '../controller/StoreController.js';
@@ -45,9 +55,15 @@ router.post('/sendOTP', sendStoreOtp)
 router.post('/verifyOTP', verifyStoreOtp)
 router.post(`/changePassword`, changePassword)
 router.get(`/storeWalletAmount`, storeWalletAmount)
+router.post(`/addProduct`, addProduct)
+router.get(`/getProducts/:category`, getProducts)
+router.put(`/updateProduct/:id`, updateProduct)
+router.delete(`/deleteProduct/:id`, deleteProduct)
+router.post(`/createOrder`, placeOrder)
+router.get(`/getAllVendorOrders`, getAllVendorOrders)
+router.post(`/updateOrderStatus/:orderId`, updateOrderStatus)
+router.post(`/addStock`, addStock)
 // router.post(`/resetLink/:tokenId`, resetLink)
-// router.post('/sendstoreOtp', sendstoreOtp)
-// router.post('/verifystoreOtp', verifystoreOtp)
 // router.post(`/sendLink`, sendLink)
 // router.get(`/showMenu`, showMenu)
 // router.post(`/packagingCharge`, packagingCharge)

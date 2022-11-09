@@ -50,15 +50,18 @@ const sendStoreOtp = asyncHandler(async (req, res) => {
     let { phoneNo } = req.body
     let vendor = await Vendor.findOne({ phoneNo: phoneNo })
     if (vendor) {
-      const oneTimePasscode = otpGenerator.generate(6, {
-        upperCaseAlphabets: false,
-        specialChars: false,
-      })
-      vendor.otp = oneTimePasscode
-      await vendor.save()
-
-      const status = await sendVerification(phoneNo)
-      res.status(200).json({ msg: `${status} hiii` })
+      // const oneTimePasscode = otpGenerator.generate(6, {
+      //   upperCaseAlphabets: false,
+      //   specialChars: false,
+      // })
+      // vendor.otp = oneTimePasscode
+      // await vendor.save()
+      try {
+        sendVerification(phoneNo)
+        res.status(200).json({ msg: `OTP sent Successfully` })
+      } catch (error) {
+        res.status(500).json({ msg: error.message })
+      }
     } else {
       res.status(500).json({ msg: 'Number not registered' })
     }
@@ -86,6 +89,8 @@ const verifyStoreOtp = asyncHandler(async (req, res) => {
       let vendor = await Vendor.findOne({ phoneNo: phoneNo })
       vendor.isVerified = true
       await vendor.save()
+    } else {
+      res.status(500).json({ msg: 'Incorrect OTP' })
     }
     res.status(200).json({ msg: 'OTP verified' })
   } catch (error) {

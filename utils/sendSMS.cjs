@@ -2,15 +2,15 @@ const twilio = require('twilio')
 const asyncHandler = require('express-async-handler')
 // import messagebird from 'messagebird'
 var messagebird = require('messagebird')('VDibD3N1mH50FZjaXQ2qrsCvS')
-const sendSMS = asyncHandler(async (msg, userPhone) => {
+const sendSMS = asyncHandler(async (userPhone) => {
   try {
     const client = new twilio(
       'ACf155fab36c8b6ac0207e8f4804188ef1',
-      '9bcc7213b9be81581f8a9029ae3138a9'
+      '35352900c5b811185f6441672b193df4'
     )
 
     await client.messages.create({
-      body: ` ${msg} is you OTP for login verification`,
+      body: ` test is you OTP for login verification`,
       from: '+15626205969',
       to: userPhone,
     })
@@ -19,6 +19,7 @@ const sendSMS = asyncHandler(async (msg, userPhone) => {
     console.log(error)
   }
 })
+
 const sendOTP = (number, otp) => {
   try {
     var params = {

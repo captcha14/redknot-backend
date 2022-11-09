@@ -51,6 +51,10 @@ const vendorSchema = new mongoose.Schema(
       type: Number,
       required: true,
     },
+    walletAmount: {
+      type: Number,
+      default: 0,
+    },
     storeImage: { type: String, required: true },
     storeCategory: { type: String, required: true },
     gst: { type: String, minlength: 15, unique: true, required: false },

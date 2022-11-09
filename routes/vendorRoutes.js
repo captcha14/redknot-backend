@@ -1,6 +1,13 @@
 import express, { Router } from 'express'
 import { sendStoreOtp, verifyStoreOtp } from '../controllers/otp.js'
-import { registerStore } from '../controllers/vendorController.js'
+import {
+  changePassword,
+  goOffline,
+  goOnline,
+  loginStore,
+  registerStore,
+  storeWalletAmount,
+} from '../controllers/vendorController.js'
 
 //import {registerStore, login} from '../controller/StoreController.js';
 // const {
@@ -33,12 +40,11 @@ router.get('/', (req, res) => {
   res.send('Vendor API is running..')
 })
 router.post(`/register-store`, registerStore)
+router.post(`/login`, loginStore)
 router.post('/sendOTP', sendStoreOtp)
 router.post('/verifyOTP', verifyStoreOtp)
-
-// router.post(`/login`, login)
-
-// router.post(`/changePassword`, changePassword)
+router.post(`/changePassword`, changePassword)
+router.get(`/storeWalletAmount`, storeWalletAmount)
 // router.post(`/resetLink/:tokenId`, resetLink)
 // router.post('/sendstoreOtp', sendstoreOtp)
 // router.post('/verifystoreOtp', verifystoreOtp)
@@ -50,9 +56,9 @@ router.post('/verifyOTP', verifyStoreOtp)
 // router.post(`/addtoMenu`, addtoMenu)
 // router.post(`/removefromMenu`, removefromMenu)
 // router.get(`/viewCoupon`, viewCoupon)
-// router.put(`/goOnline`, goOnline)
+router.put(`/goOnline`, goOnline)
 // router.post(`/deleteCoupons/:couponId`, deleteCoupons)
-// router.put(`/goOffline`, goOffline)
+router.put(`/goOffline`, goOffline)
 // router.post(`/addCoupon`, addCoupon)
 // router.post(`/createCoupons`, createCoupons)
 // router.get('/terms', terms)

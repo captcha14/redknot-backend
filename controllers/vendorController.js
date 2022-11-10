@@ -30,8 +30,8 @@ const registerStore = asyncHandler(async (req, res) => {
 })
 const loginStore = asyncHandler(async (req, res) => {
   try {
-    let { email, password } = req.body
-    const store = await Vendor.findOne({ email: email })
+    let { phoneNo, password } = req.body
+    const store = await Vendor.findOne({ phoneNo: phoneNo })
     if (!store) {
       return res.status(500).json('User not found')
     }
@@ -201,6 +201,32 @@ const addStock = asyncHandler(async (req, res) => {
     res.status(500).json({ error })
   }
 })
+
+// Fetch Reviews (Get req)c
+const fetchStoreRatings = asyncHandler(async (req, res) => {
+  try {
+    let token = req.headers.authorization.split(' ')[1]
+    let storeId = jwt.verify(token, process.env.JWT_SECRET)
+    if (!storeId) {
+      return res.json('Authentication Failed')
+    }
+    // const reviews = await Reviews.find({
+    //   vendorId: storeId.id.toString(),
+    // }).populate([
+    //   {
+    //     path: "userId",
+    //     model: "User",
+    //     select: "_id name",
+    //   },
+    // ]);
+    const store = await Vendor.findById(storeId.id)
+    const rating = store.storeRating
+
+    res.status(200).json({ ratings: rating })
+  } catch (error) {
+    res.status(500).json({ msg: error })
+  }
+})
 export {
   registerStore,
   loginStore,
@@ -211,4 +237,5 @@ export {
   getAllVendorOrders,
   updateOrderStatus,
   addStock,
+  fetchStoreRatings,
 }

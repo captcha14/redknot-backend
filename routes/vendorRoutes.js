@@ -10,6 +10,7 @@ import placeOrder from '../controllers/userController.js'
 import {
   addStock,
   changePassword,
+  fetchStoreRatings,
   getAllVendorOrders,
   goOffline,
   goOnline,
@@ -63,6 +64,7 @@ router.post(`/createOrder`, placeOrder)
 router.get(`/getAllVendorOrders`, getAllVendorOrders)
 router.post(`/updateOrderStatus/:orderId`, updateOrderStatus)
 router.post(`/addStock`, addStock)
+router.get(`/storeRatings`, fetchStoreRatings)
 // router.post(`/resetLink/:tokenId`, resetLink)
 // router.post(`/sendLink`, sendLink)
 // router.get(`/showMenu`, showMenu)

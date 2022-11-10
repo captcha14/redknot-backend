@@ -53,9 +53,24 @@ const loginStore = asyncHandler(async (req, res) => {
 })
 const changePassword = asyncHandler(async (req, res) => {
   try {
-    let { email } = req.body
-    let user = await Vendor.findOne({ email: email })
+    let { phoneNo } = req.body
+    let user = await Vendor.findOne({ phoneNo: phoneNo })
     if (user && (await user.matchPassword(req.body.password))) {
+      user.password = req.body.newPassword
+      await user.save()
+      return res.status(200).json({ msg: 'Password updated' })
+    }
+    res.status(500).json({ msg: 'Invalid email or password' })
+  } catch (error) {
+    res.status(500).json({ msg: 'Internal server error' })
+  }
+})
+
+const forgotPassword = asyncHandler(async (req, res) => {
+  try {
+    let { phoneNo } = req.body
+    let user = await Vendor.findOne({ phoneNo: phoneNo })
+    if (user) {
       user.password = req.body.newPassword
       await user.save()
       return res.status(200).json({ msg: 'Password updated' })
@@ -238,4 +253,5 @@ export {
   updateOrderStatus,
   addStock,
   fetchStoreRatings,
+  forgotPassword,
 }

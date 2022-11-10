@@ -11,6 +11,7 @@ import {
   addStock,
   changePassword,
   fetchStoreRatings,
+  forgotPassword,
   getAllVendorOrders,
   goOffline,
   goOnline,
@@ -55,6 +56,7 @@ router.post(`/login`, loginStore)
 router.post('/sendOTP', sendStoreOtp)
 router.post('/verifyOTP', verifyStoreOtp)
 router.post(`/changePassword`, changePassword)
+router.post(`/forgotPassword`, forgotPassword)
 router.get(`/storeWalletAmount`, storeWalletAmount)
 router.post(`/addProduct`, addProduct)
 router.get(`/getProducts/:category`, getProducts)

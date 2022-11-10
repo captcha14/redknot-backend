@@ -49,7 +49,7 @@ const sendStoreOtp = asyncHandler(async (req, res) => {
   try {
     let { phoneNo } = req.body
     let vendor = await Vendor.findOne({ phoneNo: phoneNo })
-    if (vendor) {
+    if (!vendor) {
       // const oneTimePasscode = otpGenerator.generate(6, {
       //   upperCaseAlphabets: false,
       //   specialChars: false,
@@ -63,7 +63,7 @@ const sendStoreOtp = asyncHandler(async (req, res) => {
         res.status(500).json({ msg: error.message })
       }
     } else {
-      res.status(500).json({ msg: 'Number not registered' })
+      res.status(500).json({ msg: 'Number already registered' })
     }
   } catch (error) {
     res.status(400).json({ error: error.message })
@@ -86,13 +86,10 @@ const verifyStoreOtp = asyncHandler(async (req, res) => {
     // verifySMS(errormess, mynum)
     const status = await checkVerification(phoneNo, code)
     if (status === 'approved') {
-      let vendor = await Vendor.findOne({ phoneNo: phoneNo })
-      vendor.isVerified = true
-      await vendor.save()
+      res.status(200).json({ msg: 'OTP verified', isVerified: true })
     } else {
       res.status(500).json({ msg: 'Incorrect OTP' })
     }
-    res.status(200).json({ msg: 'OTP verified' })
   } catch (error) {
     res.status(500).json('Internal server error')
   }
